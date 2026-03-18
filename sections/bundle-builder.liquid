@@ -1,0 +1,110 @@
+<style>
+    :root{
+        --gap:20px;
+    }
+    .bundle-section-main{
+        padding: 30px 0;
+    }
+    .bundle-section-main h2,.bundle-section-main a, .bundle-section-main p ,.bundle-section-main h3 {
+        margin: 0;
+    }
+    .bundle-wrapper{
+        display: grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:var(--gap);
+        overflow: hidden;
+    }
+    .bundle-product__image{
+        width: 100%;
+        max-width: calc(100% - var(--gap));
+    }
+    .bundle-product__image img{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+    }
+    .bundle-product__title{
+        padding: 10px 0;
+    }
+    .bundle-product__title h2{
+        text-transform: uppercase;
+        font-size: 24px;
+        line-height: normal;
+    }
+      .bundle-product__quantity{
+        display: flex;
+        align-items: center;
+        border: 1px solid #000;
+    }
+    .bundle-quantity {
+        outline: none;
+        border: none;
+        background: none;
+        box-shadow: none;
+         font-size: 24px;
+        line-height: 24px;
+        border: 1px solid #000;
+
+        text-align: center;
+        width: 100%;
+
+    }
+    .bundle-quantity:focus{
+        visibility: hidden;
+    }
+    .bundle-minus__btn,.bundle-plus__btn{
+        background: none;
+        border: none;
+        box-shadow: none;
+        border: 1px solid #000;
+        font-size: 24px;
+        line-height: normal;
+        cursor: pointer;
+        width: 100%;
+    }
+  .bundle-product__price{
+    padding-top: 20px;
+  }
+  .bundle-product__atc{
+    padding: 10px 0  0 0;
+  }
+  .add-to-bundle{
+    background:none;
+    border: 1px solid #000;
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+    <script src="{{ 'bundle-builder.js' |  asset_url }}" defer></script>
+
+<div class="bundle-section-main bundle--{{ section.id }}" data-section="{{ section.id }}">
+ {% render 'bundle-builder',section:section %}
+</div>
+{% schema %}
+{
+    "name": "Bundle Builder",
+    "settings": [
+        {
+            "type": "collection",
+            "id": "collection",
+            "label": "Select a collection"
+        },
+        {
+            "type": "checkbox",
+            "id": "subscription",
+            "label": "Subscripion widget",
+            "default": false
+        }
+        
+        ],
+    "presets": [
+        {
+            "name": "Bundle Builder"
+        }
+    ]
+}
+{% endschema %}

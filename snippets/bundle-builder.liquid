@@ -1,0 +1,36 @@
+<div class="page-width">
+    <bundle-builder>
+        <div class="bundle-wrapper">
+            {% for product in section.settings.collection.products limit:3 %}
+                {% if product.available %}
+                <div class="bundle-items" data-product-id="{{ product.id }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                    <div class="bundle-product__image">
+                        {{ product.featured_image |  image_url: width:800 |  image_tag: alt:product.title, loading:'lazy'  }}
+                    </div>
+                    <div class="bundle-product__title">
+                        <h2>{{ product.title }}</h2>
+                    </div>
+                    <div class="bundle-product__variant"></div>
+                     <div class="bundle-product__quantity">
+                        <button type="button" class="bundle-minus__btn">-</button>
+                        <input type="number" class="bundle-quantity" value="1" min="1" max="24" readonly>
+                        <button type="button" class="bundle-plus__btn">+</button>
+                    </div>
+                    <div class="bundle-product__price">
+                        <h3>{{ product.price |  money }}</h3>
+                        {% if product.compare_at_price != 0 %}
+                            <span class="bundle-product__compare-price">
+                                {{ product.compare_at_price |  money }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="bundle-product__atc">
+                        <button type="button" class="add-to-bundle">Add To Bundle</button>
+                    </div>
+                   
+                </div>
+             {% endif %}
+            {% endfor %}
+        </div>
+    </bundle-builder>
+</div>
