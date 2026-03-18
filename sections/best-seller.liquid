@@ -1,0 +1,130 @@
+{{ 'quick-add.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+<style>
+  .best-seller_main{
+    padding-top:{{ section.settings.padding_top }}px;
+    padding-bottom:{{ section.settings.padding_bottom }}px;
+  }
+</style>
+<div class="best-seller_main best-seller--{{ section.id }}">
+  <div class="page-width">
+  <div class="best-seller__head">
+    {% if section.settings.heading != blank %}
+      <div class="best-seller__heading">
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <div class="best-seller__subheading">
+        <p>{{ section.settings.subheading }}</p>
+      </div>
+    {% endif %}
+  </div>
+  {% if section.settings.collection != blank %}
+    <div class="product-card__wrapper {% if section.settings.content_type == 'grid' %}product-card__grid{% else %}product-card__flex{% endif %}">
+      {% for product in section.settings.collection.products  limit: section.settings.product_limit %}
+        {% if product.available %}
+            {% render 'product-card', product: product, section_id: section.id, quick_add: section.settings.quick_add %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+</div>
+{% schema %}
+{
+  "name": "Best seller",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Sub Heading"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "content_type",
+      "default": "grid",
+      "label": "Content Type",
+      "options": [
+        {
+          "value": "slide",
+          "label": "Slide"
+        },
+        {
+          "value": "grid",
+          "label": "Grid"
+        }
+      ]
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select the collection"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "label": "Product to show"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "Quick add",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "standard",
+          "label": "Standard"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 2,
+      "max": 200,
+      "step": 2,
+      "default": 120,
+      "unit": "px",
+      "label": "Padding top"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 2,
+      "max": 200,
+      "step": 2,
+      "default": 120,
+      "unit": "px",
+      "label": "Padding bottom"
+    },
+  ],
+  "presets": [
+    {
+      "name": "Best seller"
+    }
+  ]
+}
+{% endschema %}

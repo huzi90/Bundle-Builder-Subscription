@@ -1,0 +1,167 @@
+
+<style>
+    .bundle-main{
+        padding:30px 0;
+        position:relative;
+    }
+    .bundle-product__wrapper{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:20px;
+    }
+    .bundle-product__image img{
+        width:100%;
+        height:auto;
+        object-fit:cover;
+    }
+    .bundle-bottom__section{
+        position:sticky;
+        bottom:0;
+        height:300px;
+        background:#fff;
+       
+    }
+    .bundle-bottom__image-wrapper{
+         display:flex;
+        gap:20px;
+        flex-wrap:wrap;
+    }
+    .atc-bundle{
+        cursor:pointer;
+    }
+    .qk-popup{
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        background:#fff;
+        max-width: 900px;
+        width: 100%;
+        min-height: 600px;
+        display:none;
+        z-index:99;
+    }
+    .qk-popup.active{
+        display:block;
+    }
+</style>
+<div class="bundle-main" data-section-id="{{ section.id }}">
+    {% render "bundle-builder", section:section.settings, sectionid:section.id %}
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const bottomSection = document.querySelector(".bundle-bottom__image-wrapper");
+    const loadingSpinner = document.querySelector(".loading__spinner");
+    const popup = document.querySelector(".qk-popup");
+    let selectedVariants = [];
+
+    document.addEventListener("click", function(event) {
+
+      
+        const bundleBtn = event.target.closest(".atc-bundle");
+        if (bundleBtn) {
+            const variantId = bundleBtn.dataset.variantId;
+            const imageUrl = bundleBtn.dataset.image;
+
+           
+            if (selectedVariants.includes(variantId)) return;
+            selectedVariants.push(variantId);
+
+            
+            const alreadyAdded = bottomSection.querySelector(`.bundled-image[data-variant-id='${variantId}']`);
+            if (alreadyAdded) return;
+
+           
+            const emptySlot = bottomSection.querySelector(`.bundled-image img[src='https://placehold.co/120x120']`);
+            if (emptySlot) {
+                emptySlot.src = imageUrl;
+                emptySlot.closest(".bundled-image").setAttribute("data-variant-id", variantId);
+            } else {
+                const newDiv = document.createElement("div");
+                newDiv.classList.add("bundled-image");
+                newDiv.setAttribute("data-variant-id", variantId);
+                newDiv.innerHTML = `<img src="${imageUrl}" width="120" height="120">`;
+                bottomSection.appendChild(newDiv);
+            }
+            return; 
+        }
+
+        
+        const addToCartBtn = event.target.closest(".bundle-add-to-cart input[type='submit']");
+        if (addToCartBtn) {
+            if (selectedVariants.length === 0) {
+                alert("Please select the product first");
+                return;
+            }
+
+            addToCartBtn.disabled = true;
+            loadingSpinner.style.display = "inline-block";
+
+            const items = selectedVariants.map(id => ({ id: id, quantity: 1 }));
+
+            fetch('/cart/add.js', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: items })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Added to cart:", data);
+                refreshCartDrawer();
+            })
+            .catch(error => console.log("Error", error))
+            .finally(() => {
+                addToCartBtn.disabled = false;
+                loadingSpinner.style.display = "none";
+            });
+            return;
+        }
+
+        
+        
+
+    });
+
+    
+    function refreshCartDrawer() {
+        fetch('?section_id=cart-drawer')
+        .then(res => res.text())
+        .then(html => {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const newDrawer = doc.querySelector("cart-drawer");
+            const currentDrawer = document.querySelector("cart-drawer");
+
+            if (newDrawer && currentDrawer) {
+                currentDrawer.innerHTML = newDrawer.innerHTML;
+                currentDrawer.classList.remove('is-empty');
+                currentDrawer.classList.add('active');
+                document.body.classList.add("overflow-hidden");
+            }
+            document.dispatchEvent(new CustomEvent("cart:refresh", { bubbles: true }));
+        });
+    }
+
+});
+</script>
+{% schema %}
+{
+    "name":"Bundle",
+    "settings": [
+        {
+            "type": "header",
+            "content":"Section Content"
+        },
+        {
+            "type":"collection",
+            "id": "collection",
+            "label": "Select the collection"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Bundle"
+        }
+    ]
+}
+{% endschema %}

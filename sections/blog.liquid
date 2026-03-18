@@ -1,0 +1,28 @@
+<div class="blog-main" data-section-id="{{ section.id }}">
+    <div class="blog-content" data-blog="{{ section.settings.blog.title }}">
+        <div class="blog-image">
+            {{ section.settings.blog.articles.first.image | image_url: width: 800 | image_tag: loading:'lazy'  }}
+        </div>
+    </div>
+</div>
+{% schema %}
+{
+    "name": "Blog",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Blog Section"
+        },
+        {
+            "type": "blog",
+            "id": "blog",
+            "label": "Select the blog"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Blog"
+        }
+    ]
+}
+{% endschema %}
